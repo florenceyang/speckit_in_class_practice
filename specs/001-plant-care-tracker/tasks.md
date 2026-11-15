@@ -36,12 +36,12 @@ independently. Every task cites the requirement IDs it serves.
 
 **Purpose**: Project initialization and tooling in `frontend/`
 
-- [ ] T001 Create `frontend/package.json` (name `plantapp`, `"type": "module"`, `"private": true`) with devDependencies `typescript@^5`, `vite@^6`, `vitest`, `jsdom`, `@playwright/test`, and scripts: `dev` = `vite`, `build` = `tsc --noEmit && vite build`, `preview` = `vite preview`, `test` = `vitest run`, `test:e2e` = `playwright test`, `typecheck` = `tsc --noEmit`; then run `npm install` in `frontend/`
-- [ ] T002 [P] Create `frontend/tsconfig.json` with `"strict": true`, `"target": "ES2022"`, `"module": "ESNext"`, `"moduleResolution": "Bundler"`, `"lib": ["ES2022", "DOM", "DOM.Iterable"]`, `"noEmit": true`, `"types": ["vitest/globals"]`, including `src` and `tests`
-- [ ] T003 [P] Create `frontend/vite.config.ts` exporting a Vite config with Vitest settings `test: { environment: "jsdom", globals: true, include: ["tests/unit/**/*.test.ts"] }`
-- [ ] T004 [P] Create `frontend/playwright.config.ts`: `testDir: "tests/e2e"`, single `chromium` project, `use.baseURL: "http://localhost:4173"`, `webServer: { command: "npm run build && npm run preview -- --port 4173 --strictPort", url: "http://localhost:4173", reuseExistingServer: true }`; then run `npx playwright install chromium`
-- [ ] T005 [P] Create `frontend/index.html` with `<html lang="en">`, viewport meta, `<title>PlantApp</title>`, `<main id="app"></main>`, and `<script type="module" src="/src/main.ts"></script>`
-- [ ] T006 [P] Create `frontend/.gitignore` ignoring `node_modules/`, `dist/`, `test-results/`, `playwright-report/`
+- [X] T001 Create `frontend/package.json` (name `plantapp`, `"type": "module"`, `"private": true`) with devDependencies `typescript@^5`, `vite@^6`, `vitest`, `jsdom`, `@playwright/test`, and scripts: `dev` = `vite`, `build` = `tsc --noEmit && vite build`, `preview` = `vite preview`, `test` = `vitest run`, `test:e2e` = `playwright test`, `typecheck` = `tsc --noEmit`; then run `npm install` in `frontend/`
+- [X] T002 [P] Create `frontend/tsconfig.json` with `"strict": true`, `"target": "ES2022"`, `"module": "ESNext"`, `"moduleResolution": "Bundler"`, `"lib": ["ES2022", "DOM", "DOM.Iterable"]`, `"noEmit": true`, `"types": ["vitest/globals"]`, including `src` and `tests`
+- [X] T003 [P] Create `frontend/vite.config.ts` exporting a Vite config with Vitest settings `test: { environment: "jsdom", globals: true, include: ["tests/unit/**/*.test.ts"] }`
+- [X] T004 [P] Create `frontend/playwright.config.ts`: `testDir: "tests/e2e"`, single `chromium` project, `use.baseURL: "http://localhost:4173"`, `webServer: { command: "npm run build && npm run preview -- --port 4173 --strictPort", url: "http://localhost:4173", reuseExistingServer: true }`; then run `npx playwright install chromium`
+- [X] T005 [P] Create `frontend/index.html` with `<html lang="en">`, viewport meta, `<title>PlantApp</title>`, `<main id="app"></main>`, and `<script type="module" src="/src/main.ts"></script>`
+- [X] T006 [P] Create `frontend/.gitignore` ignoring `node_modules/`, `dist/`, `test-results/`, `playwright-report/`
 
 ---
 
@@ -51,14 +51,14 @@ independently. Every task cites the requirement IDs it serves.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T007 [P] Write unit tests in `frontend/tests/unit/plant.test.ts` for `validatePlantInput` covering boundaries: name `""`/whitespace-only → "Name is required."; 50 chars OK, 51 chars → "Name must be 50 characters or fewer."; `wateringIntervalDays` 0, 366, 2.5, NaN → "Watering interval must be a whole number from 1 to 365 days." and 1, 365 OK; `maxHoursOutside` 0, 73, 1.5 → "Max time outside must be a whole number from 1 to 72 hours." and 1, 72 OK; `validatePastTime(t, now)` with `t > now` → "Time can't be in the future." (FR-001, FR-002, FR-015)
-- [ ] T008 [P] Write unit tests in `frontend/tests/unit/store.test.ts` (jsdom `localStorage`): missing key → `{ plants: [] , canSave: true }`; save then load round-trips plants; unparseable JSON → empty in-memory plants, `canSave: false`, and the raw stored value is NOT overwritten by later saves; unknown `schemaVersion` → same as unparseable; a plant failing validation is skipped while valid plants load; when `localStorage.setItem` throws → `canSave: false` (FR-014)
-- [ ] T009 Implement `frontend/src/domain/plant.ts`: export `type Location = "inside" | "outside"`; `interface Plant { id: string; name: string; wateringIntervalDays: number; maxHoursOutside: number; lastWateredAt: number | null; location: Location; putOutsideAt: number | null; createdAt: number }`; constants `DAY_MS`, `HOUR_MS`, `DEFAULT_WATERING_DAYS = 3`, `DEFAULT_MAX_HOURS_OUTSIDE = 4`; `validatePlantInput({name, wateringIntervalDays, maxHoursOutside})` returning a field→message map using the exact messages from data-model.md (name "Trimmed length 1–50 characters; duplicates allowed", interval "Whole number 1–365", max outside "Whole number 1–72; default 4"); `validatePastTime(t, now)`; `createPlant(input, now)` that trims the name, sets `id = crypto.randomUUID()`, `lastWateredAt: null`, `location: "inside"`, `putOutsideAt: null`, `createdAt: now`; `isValidStoredPlant(x)` enforcing "`putOutsideAt` non-null **iff** `location = "outside"`". Make T007 pass (FR-001, FR-002, FR-015)
-- [ ] T010 Implement `frontend/src/storage/store.ts`: `STORAGE_KEY = "plantapp.v1"`, `SCHEMA_VERSION = 1`; `loadPlants(): { plants: Plant[]; canSave: boolean }`; `savePlants(plants)` writing `{ schemaVersion: 1, plants }` synchronously and skipping writes when `canSave` is false; `subscribeToExternalChanges(onChange)` listening to the window `storage` event for `STORAGE_KEY`. Make T008 pass (FR-014, FR-016; research R3)
-- [ ] T011 [P] Implement `frontend/src/ui/format.ts`: `formatDateTime(ms)` using `Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" })` (device locale, minute precision); `toDateTimeLocalValue(ms)` and `fromDateTimeLocalValue(str)` for `<input type="datetime-local">` (research R5)
-- [ ] T012 Implement app shell in `frontend/src/main.ts` and `frontend/src/ui/render.ts`: hold `state = { plants, canSave }` from `loadPlants()`; `dispatch(updater)` applies a state change, calls `savePlants`, then re-renders; `render(root, state, now)` outputs `<h1>PlantApp</h1>`, the storage warning `role="alert"` "Changes can't be saved on this device." only when `canSave` is false, and an empty `<ul aria-label="Plants">`; `getNow()` returns `Date.now()` (single clock source for tests) (FR-014; ui-contract "Screen layout")
-- [ ] T013 [P] Create `frontend/src/styles.css` with mobile-first single-column layout, readable button sizes (min 44px tap target), and badge styles that pair text with color; import it from `frontend/src/main.ts` (research R8)
-- [ ] T014 [P] Create e2e helpers in `frontend/tests/e2e/fixtures.ts`: `seedPlants(page, plants)` that uses `page.addInitScript` to write `{ schemaVersion: 1, plants }` to `localStorage["plantapp.v1"]` before load; `makePlant(overrides)` with defaults (`wateringIntervalDays: 3`, `maxHoursOutside: 4`, `location: "inside"`, nulls); `installClock(page, isoTime)` wrapping `page.clock.install({ time })`; constants `DAY_MS`, `HOUR_MS`, `MINUTE_MS`; `plantRow(page, name)` locator for `li[data-testid^="plant-"]` filtered by heading text
+- [X] T007 [P] Write unit tests in `frontend/tests/unit/plant.test.ts` for `validatePlantInput` covering boundaries: name `""`/whitespace-only → "Name is required."; 50 chars OK, 51 chars → "Name must be 50 characters or fewer."; `wateringIntervalDays` 0, 366, 2.5, NaN → "Watering interval must be a whole number from 1 to 365 days." and 1, 365 OK; `maxHoursOutside` 0, 73, 1.5 → "Max time outside must be a whole number from 1 to 72 hours." and 1, 72 OK; `validatePastTime(t, now)` with `t > now` → "Time can't be in the future." (FR-001, FR-002, FR-015)
+- [X] T008 [P] Write unit tests in `frontend/tests/unit/store.test.ts` (jsdom `localStorage`): missing key → `{ plants: [] , canSave: true }`; save then load round-trips plants; unparseable JSON → empty in-memory plants, `canSave: false`, and the raw stored value is NOT overwritten by later saves; unknown `schemaVersion` → same as unparseable; a plant failing validation is skipped while valid plants load; when `localStorage.setItem` throws → `canSave: false` (FR-014)
+- [X] T009 Implement `frontend/src/domain/plant.ts`: export `type Location = "inside" | "outside"`; `interface Plant { id: string; name: string; wateringIntervalDays: number; maxHoursOutside: number; lastWateredAt: number | null; location: Location; putOutsideAt: number | null; createdAt: number }`; constants `DAY_MS`, `HOUR_MS`, `DEFAULT_WATERING_DAYS = 3`, `DEFAULT_MAX_HOURS_OUTSIDE = 4`; `validatePlantInput({name, wateringIntervalDays, maxHoursOutside})` returning a field→message map using the exact messages from data-model.md (name "Trimmed length 1–50 characters; duplicates allowed", interval "Whole number 1–365", max outside "Whole number 1–72; default 4"); `validatePastTime(t, now)`; `createPlant(input, now)` that trims the name, sets `id = crypto.randomUUID()`, `lastWateredAt: null`, `location: "inside"`, `putOutsideAt: null`, `createdAt: now`; `isValidStoredPlant(x)` enforcing "`putOutsideAt` non-null **iff** `location = "outside"`". Make T007 pass (FR-001, FR-002, FR-015)
+- [X] T010 Implement `frontend/src/storage/store.ts`: `STORAGE_KEY = "plantapp.v1"`, `SCHEMA_VERSION = 1`; `loadPlants(): { plants: Plant[]; canSave: boolean }`; `savePlants(plants)` writing `{ schemaVersion: 1, plants }` synchronously and skipping writes when `canSave` is false; `subscribeToExternalChanges(onChange)` listening to the window `storage` event for `STORAGE_KEY`. Make T008 pass (FR-014, FR-016; research R3)
+- [X] T011 [P] Implement `frontend/src/ui/format.ts`: `formatDateTime(ms)` using `Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" })` (device locale, minute precision); `toDateTimeLocalValue(ms)` and `fromDateTimeLocalValue(str)` for `<input type="datetime-local">` (research R5)
+- [X] T012 Implement app shell in `frontend/src/main.ts` and `frontend/src/ui/render.ts`: hold `state = { plants, canSave }` from `loadPlants()`; `dispatch(updater)` applies a state change, calls `savePlants`, then re-renders; `render(root, state, now)` outputs `<h1>PlantApp</h1>`, the storage warning `role="alert"` "Changes can't be saved on this device." only when `canSave` is false, and an empty `<ul aria-label="Plants">`; `getNow()` returns `Date.now()` (single clock source for tests) (FR-014; ui-contract "Screen layout")
+- [X] T013 [P] Create `frontend/src/styles.css` with mobile-first single-column layout, readable button sizes (min 44px tap target), and badge styles that pair text with color; import it from `frontend/src/main.ts` (research R8)
+- [X] T014 [P] Create e2e helpers in `frontend/tests/e2e/fixtures.ts`: `seedPlants(page, plants)` that uses `page.addInitScript` to write `{ schemaVersion: 1, plants }` to `localStorage["plantapp.v1"]` before load; `makePlant(overrides)` with defaults (`wateringIntervalDays: 3`, `maxHoursOutside: 4`, `location: "inside"`, nulls); `installClock(page, isoTime)` wrapping `page.clock.install({ time })`; constants `DAY_MS`, `HOUR_MS`, `MINUTE_MS`; `plantRow(page, name)` locator for `li[data-testid^="plant-"]` filtered by heading text
 
 **Checkpoint**: Foundation ready. `npm test` passes; the app loads showing "PlantApp" and an empty list.
 
@@ -72,22 +72,22 @@ independently. Every task cites the requirement IDs it serves.
 
 ### Tests for User Story 1 ⚠️ (write first, confirm they fail)
 
-- [ ] T015 [P] [US1] Write e2e tests in `frontend/tests/e2e/us1-plants-watering.spec.ts`, one per scenario:
+- [X] T015 [P] [US1] Write e2e tests in `frontend/tests/e2e/us1-plants-watering.spec.ts`, one per scenario:
   - `US1-S1 [FR-001, FR-002, FR-005] adds a plant that shows Never watered`: empty storage; fill "Name" = "Fern", "Water every (days)" = 3; click "Add plant"; expect row "Fern" containing "Never watered"
   - `US1-S2 [FR-004, FR-005] marking watered records current time`: install clock at a fixed time; seed Fern never watered; click "Watered" in Fern's row; expect "Last watered: <formatted fixed time>"
   - `US1-S3 [FR-014] last-watered time survives reload`: mark Fern watered; `page.reload()`; expect the same "Last watered" text
   - `US1-S4 [FR-002] rejects invalid plant input`: submit with empty name → "Name is required." visible, field has `aria-invalid="true"`, list unchanged; submit name "Fern" with interval 0 → "Watering interval must be a whole number from 1 to 365 days." and list unchanged
   - `US1-S5 [FR-016] change is visible to the other roommate on the same device`: open two pages in the same browser context; mark Fern watered on page A; expect page B to show the updated "Last watered" without manual reload (storage event)
   - `US1-S6 [FR-003] edits interval and deletes a plant`: click "Edit" on Fern, set "Water every (days)" = 5, "Save" → row shows "Every 5 days"; click "Delete", accept dialog "Delete Fern?" → Fern no longer in list
-- [ ] T016 [P] [US1] Add unit tests in `frontend/tests/unit/actions.test.ts` for `markWatered(plant, now)` (sets `lastWateredAt = now`, leaves `location`/`putOutsideAt` unchanged), `updatePlant` (re-validates via `validatePlantInput`; correcting `lastWateredAt` to a future time is rejected with "Time can't be in the future."), and `deletePlant` (FR-003, FR-004, FR-015)
+- [X] T016 [P] [US1] Add unit tests in `frontend/tests/unit/actions.test.ts` for `markWatered(plant, now)` (sets `lastWateredAt = now`, leaves `location`/`putOutsideAt` unchanged), `updatePlant` (re-validates via `validatePlantInput`; correcting `lastWateredAt` to a future time is rejected with "Time can't be in the future."), and `deletePlant` (FR-003, FR-004, FR-015)
 
 ### Implementation for User Story 1
 
-- [ ] T017 [US1] Implement in `frontend/src/domain/actions.ts`: `addPlant(plants, input, now)`, `markWatered(plants, id, now)`, `updatePlant(plants, id, changes, now)` (name, wateringIntervalDays, maxHoursOutside, optional corrected `lastWateredAt` which must satisfy `validatePastTime`), `deletePlant(plants, id)`; all pure, returning `{ plants } | { errors }`. Make T016 pass (FR-001–FR-004, FR-015)
-- [ ] T018 [US1] Implement `frontend/src/ui/plantForm.ts`: `<form aria-label="Add plant">` with labeled inputs "Name" (text), "Water every (days)" (number, step 1, default 3), "Max time outside (hours)" (number, step 1, default 4) and submit "Add plant"; on submit call `addPlant`; on errors show each message next to its field, set `aria-invalid="true"`, focus the first invalid field, and save nothing; on success reset the form (FR-001, FR-002)
-- [ ] T019 [US1] Implement `frontend/src/ui/plantRow.ts`: `<li data-testid="plant-<id>">` with the plant name as a heading, "Every N days" text, "Last watered: `<formatDateTime>`" or "Never watered", and a "Watered" button calling `markWatered` with `getNow()` (FR-004, FR-005)
-- [ ] T020 [US1] Add edit and delete to `frontend/src/ui/plantRow.ts`: "Edit" opens an inline form reusing the plantForm fields plus "Correct last watered" (`datetime-local`), with "Save"/"Cancel"; "Delete" calls `window.confirm("Delete <name>?")` and on confirm calls `deletePlant` (FR-003, FR-015)
-- [ ] T021 [US1] Wire into `frontend/src/ui/render.ts` and `frontend/src/main.ts`: render the add form and one row per plant ordered by `createdAt`; call `subscribeToExternalChanges` to reload state from storage and re-render when another tab on the same device changes it. Make T015 pass (FR-005, FR-014, FR-016)
+- [X] T017 [US1] Implement in `frontend/src/domain/actions.ts`: `addPlant(plants, input, now)`, `markWatered(plants, id, now)`, `updatePlant(plants, id, changes, now)` (name, wateringIntervalDays, maxHoursOutside, optional corrected `lastWateredAt` which must satisfy `validatePastTime`), `deletePlant(plants, id)`; all pure, returning `{ plants } | { errors }`. Make T016 pass (FR-001–FR-004, FR-015)
+- [X] T018 [US1] Implement `frontend/src/ui/plantForm.ts`: `<form aria-label="Add plant">` with labeled inputs "Name" (text), "Water every (days)" (number, step 1, default 3), "Max time outside (hours)" (number, step 1, default 4) and submit "Add plant"; on submit call `addPlant`; on errors show each message next to its field, set `aria-invalid="true"`, focus the first invalid field, and save nothing; on success reset the form (FR-001, FR-002)
+- [X] T019 [US1] Implement `frontend/src/ui/plantRow.ts`: `<li data-testid="plant-<id>">` with the plant name as a heading, "Every N days" text, "Last watered: `<formatDateTime>`" or "Never watered", and a "Watered" button calling `markWatered` with `getNow()` (FR-004, FR-005)
+- [X] T020 [US1] Add edit and delete to `frontend/src/ui/plantRow.ts`: "Edit" opens an inline form reusing the plantForm fields plus "Correct last watered" (`datetime-local`), with "Save"/"Cancel"; "Delete" calls `window.confirm("Delete <name>?")` and on confirm calls `deletePlant` (FR-003, FR-015)
+- [X] T021 [US1] Wire into `frontend/src/ui/render.ts` and `frontend/src/main.ts`: render the add form and one row per plant ordered by `createdAt`; call `subscribeToExternalChanges` to reload state from storage and re-render when another tab on the same device changes it. Make T015 pass (FR-005, FR-014, FR-016)
 
 **Checkpoint**: US1 e2e and unit tests pass; MVP usable for tracking watering.
 
@@ -101,8 +101,8 @@ independently. Every task cites the requirement IDs it serves.
 
 ### Tests for User Story 2 ⚠️ (write first, confirm they fail)
 
-- [ ] T022 [P] [US2] Write unit tests in `frontend/tests/unit/alerts.test.ts` for `computeAlerts(plants, now)` needs-water rules: never watered → alert with `dueAt: null`; elapsed = `3 × DAY_MS − 1` → none; elapsed = exactly `3 × DAY_MS` → alert (rule is "≥"); `lastWateredAt` in the future (clock moved back) → no alert, no throw (FR-009; data-model "Alert" rules)
-- [ ] T023 [P] [US2] Write e2e tests in `frontend/tests/e2e/us2-water-alerts.spec.ts`:
+- [X] T022 [P] [US2] Write unit tests in `frontend/tests/unit/alerts.test.ts` for `computeAlerts(plants, now)` needs-water rules: never watered → alert with `dueAt: null`; elapsed = `3 × DAY_MS − 1` → none; elapsed = exactly `3 × DAY_MS` → alert (rule is "≥"); `lastWateredAt` in the future (clock moved back) → no alert, no throw (FR-009; data-model "Alert" rules)
+- [X] T023 [P] [US2] Write e2e tests in `frontend/tests/e2e/us2-water-alerts.spec.ts`:
   - `US2-S1 [FR-009, FR-012] shows Needs water after interval passes`: clock at T; seed Fern (3 days) watered at `T − 3 days − 1 minute`; expect "Needs water" in Fern's row
   - `US2-S2 [FR-009] no alert before interval passes`: seed Fern watered at `T − 2 days`; expect no "Needs water" in Fern's row
   - `US2-S3 [FR-009] never-watered plant needs water`: seed Fern with `lastWateredAt: null`; expect "Needs water"
@@ -111,9 +111,9 @@ independently. Every task cites the requirement IDs it serves.
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Implement `frontend/src/domain/alerts.ts`: `type AlertType = "needs-water" | "bring-inside"`; `interface Alert { plantId: string; type: AlertType; dueAt: number | null }`; `computeAlerts(plants, now)` emitting `needs-water` iff `lastWateredAt === null` or `max(0, now − lastWateredAt) ≥ wateringIntervalDays × DAY_MS`, with `dueAt = lastWateredAt + wateringIntervalDays × DAY_MS` (or `null`). Leave a clearly marked spot for `bring-inside` (added in T031). Make T022 pass (FR-009)
-- [ ] T025 [US2] In `frontend/src/ui/plantRow.ts`, render a text badge "Needs water" (class `badge badge--water`) when the plant has a `needs-water` alert; `render.ts` computes alerts once per render via `computeAlerts(state.plants, getNow())` and passes them to rows (FR-009, FR-010)
-- [ ] T026 [US2] In `frontend/src/main.ts`, re-render every 30 seconds via `setInterval(rerender, 30_000)` and on `document` `visibilitychange` when `document.visibilityState === "visible"`; make no `Notification` or network calls. Make T023 pass (FR-012; research R4)
+- [X] T024 [US2] Implement `frontend/src/domain/alerts.ts`: `type AlertType = "needs-water" | "bring-inside"`; `interface Alert { plantId: string; type: AlertType; dueAt: number | null }`; `computeAlerts(plants, now)` emitting `needs-water` iff `lastWateredAt === null` or `max(0, now − lastWateredAt) ≥ wateringIntervalDays × DAY_MS`, with `dueAt = lastWateredAt + wateringIntervalDays × DAY_MS` (or `null`). Leave a clearly marked spot for `bring-inside` (added in T031). Make T022 pass (FR-009)
+- [X] T025 [US2] In `frontend/src/ui/plantRow.ts`, render a text badge "Needs water" (class `badge badge--water`) when the plant has a `needs-water` alert; `render.ts` computes alerts once per render via `computeAlerts(state.plants, getNow())` and passes them to rows (FR-009, FR-010)
+- [X] T026 [US2] In `frontend/src/main.ts`, re-render every 30 seconds via `setInterval(rerender, 30_000)` and on `document` `visibilitychange` when `document.visibilityState === "visible"`; make no `Notification` or network calls. Make T023 pass (FR-012; research R4)
 
 **Checkpoint**: US1 + US2 tests pass; watering alerts work end-to-end.
 
@@ -127,9 +127,9 @@ independently. Every task cites the requirement IDs it serves.
 
 ### Tests for User Story 3 ⚠️ (write first, confirm they fail)
 
-- [ ] T027 [P] [US3] Extend `frontend/tests/unit/alerts.test.ts` with bring-inside rules: inside plant → none; outside with elapsed `4 × HOUR_MS − 1` → none; exactly `4 × HOUR_MS` → alert; plant both overdue for water and outside past limit → both alerts (FR-011; Edge Cases)
-- [ ] T028 [P] [US3] Extend `frontend/tests/unit/actions.test.ts` for `markOutside(plants, id, now)` (sets `location: "outside"`, `putOutsideAt: now`, leaves `lastWateredAt`), `markInside` (sets `location: "inside"`, `putOutsideAt: null`), and correcting `putOutsideAt` to a future time → "Time can't be in the future." (FR-006, FR-008, FR-015)
-- [ ] T029 [P] [US3] Write e2e tests in `frontend/tests/e2e/us3-outside-alerts.spec.ts`:
+- [X] T027 [P] [US3] Extend `frontend/tests/unit/alerts.test.ts` with bring-inside rules: inside plant → none; outside with elapsed `4 × HOUR_MS − 1` → none; exactly `4 × HOUR_MS` → alert; plant both overdue for water and outside past limit → both alerts (FR-011; Edge Cases)
+- [X] T028 [P] [US3] Extend `frontend/tests/unit/actions.test.ts` for `markOutside(plants, id, now)` (sets `location: "outside"`, `putOutsideAt: now`, leaves `lastWateredAt`), `markInside` (sets `location: "inside"`, `putOutsideAt: null`), and correcting `putOutsideAt` to a future time → "Time can't be in the future." (FR-006, FR-008, FR-015)
+- [X] T029 [P] [US3] Write e2e tests in `frontend/tests/e2e/us3-outside-alerts.spec.ts`:
   - `US3-S1 [FR-006, FR-007] putting a plant outside records the time`: clock at T; seed Basil inside; click "Put outside"; expect "Outside since <formatted T>"
   - `US3-S2 [FR-011, FR-012] shows Bring inside after max time outside`: seed Basil outside, `maxHoursOutside: 4`, `putOutsideAt: T − 4 h − 1 min`; expect "Bring inside" badge
   - `US3-S3 [FR-011] no alert before max time outside`: `putOutsideAt: T − 3 h`; expect no "Bring inside" badge
@@ -139,9 +139,9 @@ independently. Every task cites the requirement IDs it serves.
 
 ### Implementation for User Story 3
 
-- [ ] T030 [US3] Add to `frontend/src/domain/actions.ts`: `markOutside(plants, id, now)`, `markInside(plants, id)`, and support for a corrected `putOutsideAt` in `updatePlant` (only when `location === "outside"`, must satisfy `validatePastTime`); preserve the invariant "`putOutsideAt` non-null **iff** `location = "outside"`". Make T028 pass (FR-006, FR-008, FR-015)
-- [ ] T031 [US3] Extend `computeAlerts` in `frontend/src/domain/alerts.ts` to emit `bring-inside` iff `location === "outside"` and `max(0, now − putOutsideAt) ≥ maxHoursOutside × HOUR_MS`, with `dueAt = putOutsideAt + maxHoursOutside × HOUR_MS`. Make T027 pass (FR-011)
-- [ ] T032 [US3] Update `frontend/src/ui/plantRow.ts`: location text "Inside" or "Outside since `<formatDateTime(putOutsideAt)>`"; when inside show button "Put outside"; when outside show buttons "Bring inside" and "Put outside again" (the latter calls `window.confirm("Reset the time <name> was put outside?")` before `markOutside`); show "Bring inside" text badge (class `badge badge--inside`) when the alert is active; in the edit form add "Correct time put outside" (`datetime-local`) shown only when outside. Make T029 pass (FR-006–FR-008, FR-011, FR-015)
+- [X] T030 [US3] Add to `frontend/src/domain/actions.ts`: `markOutside(plants, id, now)`, `markInside(plants, id)`, and support for a corrected `putOutsideAt` in `updatePlant` (only when `location === "outside"`, must satisfy `validatePastTime`); preserve the invariant "`putOutsideAt` non-null **iff** `location = "outside"`". Make T028 pass (FR-006, FR-008, FR-015)
+- [X] T031 [US3] Extend `computeAlerts` in `frontend/src/domain/alerts.ts` to emit `bring-inside` iff `location === "outside"` and `max(0, now − putOutsideAt) ≥ maxHoursOutside × HOUR_MS`, with `dueAt = putOutsideAt + maxHoursOutside × HOUR_MS`. Make T027 pass (FR-011)
+- [X] T032 [US3] Update `frontend/src/ui/plantRow.ts`: location text "Inside" or "Outside since `<formatDateTime(putOutsideAt)>`"; when inside show button "Put outside"; when outside show buttons "Bring inside" and "Put outside again" (the latter calls `window.confirm("Reset the time <name> was put outside?")` before `markOutside`); show "Bring inside" text badge (class `badge badge--inside`) when the alert is active; in the edit form add "Correct time put outside" (`datetime-local`) shown only when outside. Make T029 pass (FR-006–FR-008, FR-011, FR-015)
 
 **Checkpoint**: US1–US3 tests pass; both source alert requirements are met.
 
@@ -155,15 +155,15 @@ independently. Every task cites the requirement IDs it serves.
 
 ### Tests for User Story 4 ⚠️ (write first, confirm they fail)
 
-- [ ] T033 [P] [US4] Write unit tests in `frontend/tests/unit/summary.test.ts` for `orderAlerts(alerts, plants)`: `bring-inside` before `needs-water`, then `dueAt` ascending with `null` (never watered) first, then plant name (FR-013; data-model "Summary ordering")
-- [ ] T034 [P] [US4] Write e2e tests in `frontend/tests/e2e/us4-summary.spec.ts`:
+- [X] T033 [P] [US4] Write unit tests in `frontend/tests/unit/summary.test.ts` for `orderAlerts(alerts, plants)`: `bring-inside` before `needs-water`, then `dueAt` ascending with `null` (never watered) first, then plant name (FR-013; data-model "Summary ordering")
+- [X] T034 [P] [US4] Write e2e tests in `frontend/tests/e2e/us4-summary.spec.ts`:
   - `US4-S1 [FR-013] summary lists exactly the plants needing attention`: seed 5 plants (Fern and Ivy overdue for water, Basil outside past 4 h, Cactus and Mint fine); expect region "Needs attention" to contain "3 alerts", "Basil — Bring inside", "Fern — Needs water", "Ivy — Needs water", and not contain "Cactus" or "Mint"
   - `US4-S2 [FR-013] summary says all plants are taken care of`: seed only fine plants; expect "All plants are taken care of."
 
 ### Implementation for User Story 4
 
-- [ ] T035 [US4] Implement `frontend/src/ui/summary.ts`: export `orderAlerts`; render `<section aria-label="Needs attention" aria-live="polite">` with "`N` alert(s)" (singular "1 alert") and one list item per alert formatted "`<name>` — Needs water" / "`<name>` — Bring inside", or "All plants are taken care of." when there are none. Make T033 pass (FR-013)
-- [ ] T036 [US4] Render the summary above the add form in `frontend/src/ui/render.ts` using the same `computeAlerts` result as the rows. Make T034 pass (FR-013)
+- [X] T035 [US4] Implement `frontend/src/ui/summary.ts`: export `orderAlerts`; render `<section aria-label="Needs attention" aria-live="polite">` with "`N` alert(s)" (singular "1 alert") and one list item per alert formatted "`<name>` — Needs water" / "`<name>` — Bring inside", or "All plants are taken care of." when there are none. Make T033 pass (FR-013)
+- [X] T036 [US4] Render the summary above the add form in `frontend/src/ui/render.ts` using the same `computeAlerts` result as the rows. Make T034 pass (FR-013)
 
 **Checkpoint**: All four user stories pass independently.
 
@@ -173,12 +173,12 @@ independently. Every task cites the requirement IDs it serves.
 
 **Purpose**: Constitution compliance checks and final validation
 
-- [ ] T037 [P] Add e2e test `frontend/tests/e2e/constraints.spec.ts`: `CONST [Principle IV] makes no network requests after load` — record `page.on("request")` after initial load, perform add/water/outside/inside actions, expect zero requests; and `EDGE [FR-014] shows storage warning on corrupt data` — seed `localStorage["plantapp.v1"] = "not json"`, expect `role="alert"` "Changes can't be saved on this device." and the raw value unchanged after an action
-- [ ] T038 [P] Add e2e test in `frontend/tests/e2e/us1-plants-watering.spec.ts`: `EDGE [FR-015] rejects a future last-watered correction` — Edit Fern, set "Correct last watered" to tomorrow, Save → "Time can't be in the future." and the stored time unchanged
-- [ ] T039 [P] Add `frontend/README.md` with the setup, run, and test commands from `specs/001-plant-care-tracker/quickstart.md` and a link back to the spec
-- [ ] T040 Traceability check: confirm every FR-001–FR-016 appears in at least one test name under `frontend/tests/` (e.g. `grep -rhoE "FR-0[0-9]{2}" frontend/tests | sort -u`) and that all 18 `US<n>-S<m>` scenario tests exist; add any missing test (Principle II)
-- [ ] T041 Run `npm run typecheck`, `npm test`, and `npm run test:e2e` in `frontend/`; then perform the manual smoke test in `specs/001-plant-care-tracker/quickstart.md`; all must pass
-- [ ] T042 Verify `git status` shows no application files outside `frontend/` (Principle III)
+- [X] T037 [P] Add e2e test `frontend/tests/e2e/constraints.spec.ts`: `CONST [Principle IV] makes no network requests after load` — record `page.on("request")` after initial load, perform add/water/outside/inside actions, expect zero requests; and `EDGE [FR-014] shows storage warning on corrupt data` — seed `localStorage["plantapp.v1"] = "not json"`, expect `role="alert"` "Changes can't be saved on this device." and the raw value unchanged after an action
+- [X] T038 [P] Add e2e test in `frontend/tests/e2e/us1-plants-watering.spec.ts`: `EDGE [FR-015] rejects a future last-watered correction` — Edit Fern, set "Correct last watered" to tomorrow, Save → "Time can't be in the future." and the stored time unchanged
+- [X] T039 [P] Add `frontend/README.md` with the setup, run, and test commands from `specs/001-plant-care-tracker/quickstart.md` and a link back to the spec
+- [X] T040 Traceability check: confirm every FR-001–FR-016 appears in at least one test name under `frontend/tests/` (e.g. `grep -rhoE "FR-0[0-9]{2}" frontend/tests | sort -u`) and that all 18 `US<n>-S<m>` scenario tests exist; add any missing test (Principle II)
+- [X] T041 Run `npm run typecheck`, `npm test`, and `npm run test:e2e` in `frontend/`; then perform the manual smoke test in `specs/001-plant-care-tracker/quickstart.md`; all must pass
+- [X] T042 Verify `git status` shows no application files outside `frontend/` (Principle III)
 
 ---
 

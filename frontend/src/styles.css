@@ -1,0 +1,90 @@
+:root {
+  --bg: #f7f9f6;
+  --surface: #ffffff;
+  --text: #1d2a1f;
+  --muted: #5b6b5e;
+  --border: #d5ddd6;
+  --accent: #2f7d4a;
+  --water: #1f5fa8;
+  --water-bg: #e4eefa;
+  --inside: #9a4b00;
+  --inside-bg: #fdeedb;
+  --danger: #b3261e;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; background: var(--bg); }
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1 { margin: 0.5rem 0 1rem; color: var(--accent); }
+h2 { font-size: 1.15rem; margin: 0 0 0.5rem; }
+
+.storage-warning {
+  background: #fdecea;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.plant-list { list-style: none; padding: 0; margin: 0; }
+
+.plant p { margin: 0.25rem 0; color: var(--muted); }
+
+.field { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.75rem; }
+.field label { font-weight: 600; }
+.field input {
+  font: inherit;
+  padding: 0.6rem;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+.field input[aria-invalid="true"] { border-color: var(--danger); }
+.field-error { color: var(--danger); font-size: 0.9rem; margin: 0; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+
+button {
+  font: inherit;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+button.secondary { background: var(--surface); color: var(--accent); }
+button.danger { background: var(--surface); color: var(--danger); border-color: var(--danger); }
+
+.badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.25rem 0 0.5rem; }
+.badge {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+.badge--water { background: var(--water-bg); color: var(--water); border: 1px solid var(--water); }
+.badge--inside { background: var(--inside-bg); color: var(--inside); border: 1px solid var(--inside); }
+
+.summary ul { margin: 0.5rem 0 0; padding-left: 1.25rem; }
+.summary .all-good { color: var(--accent); font-weight: 600; margin: 0; }
