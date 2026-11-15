@@ -36,6 +36,7 @@ Edit uses the same form inside the plant row with buttons "Save" and "Cancel" (F
 | Element | Contract | Requirement |
 |---------|----------|-------------|
 | Name | Plant name as heading text | FR-005 |
+| Interval | "Every `N` days" | FR-001, FR-003 |
 | Last watered | "Last watered: `<local date time>`" or "Never watered" | FR-005 |
 | Location | "Inside" or "Outside since `<local date time>`" | FR-007 |
 | Badges | Text badges "Needs water" and/or "Bring inside" when active | FR-009, FR-011 |
